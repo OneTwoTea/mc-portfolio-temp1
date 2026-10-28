@@ -1,0 +1,240 @@
+<!-- ĐÂY LÀ FILE KHUNG (template). KHÔNG sửa nội dung ở đây — hãy sửa site.config.js.
+     Cú pháp:  {{ duong.dan }}      → chèn giá trị trong site.config.js (đã escape HTML)
+               {{{ @tenRenderer }}} → chèn HTML do hàm trong src/templates.js sinh ra
+     Comment này sẽ tự bị xóa khi build. -->
+<!doctype html>
+<html lang="{{ seo.lang }}" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>{{ seo.title }}</title>
+    <meta name="description" content="{{ seo.description }}">
+    <meta name="keywords" content="{{ seo.keywords }}">
+    <meta name="author" content="{{ brand.name }}">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="{{ seo.themeColor }}">
+    <meta name="color-scheme" content="light">
+
+    <!-- Open Graph (Facebook, Zalo) -->
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="{{ seo.locale }}">
+    <meta property="og:site_name" content="{{ brand.name }}">
+    <meta property="og:title" content="{{ seo.title }}">
+    <meta property="og:description" content="{{ seo.description }}">
+
+    <!-- Twitter card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ seo.title }}">
+    <meta name="twitter:description" content="{{ seo.description }}">
+
+    {{{ @seoHead }}}
+
+    <!-- Favicon -->
+    <link rel="icon" href="public/icons/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="public/icons/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="public/icons/apple-touch-icon.png">
+
+    <!-- Font: dùng sans-serif có sẵn của hệ thống (khai báo trong src/input.css), không tải font ngoài -->
+
+    <link rel="stylesheet" href="assets/css/style.css">
+    {{{ @pageBackground }}}
+    <!-- Đánh dấu có JS + bắt ảnh lỗi/chưa có sớm nhất để hiện khung thay thế -->
+    <script>
+      document.documentElement.classList.add("js");
+      document.addEventListener("error", function (e) {
+        var t = e.target;
+        if (t && t.tagName === "IMG") t.classList.add("img-missing");
+      }, true);
+    </script>
+    <script src="assets/js/main.js" defer></script>
+  </head>
+
+  <body class="font-sans text-base text-cream antialiased">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-gold focus:px-5 focus:py-3 focus:text-ink">Bỏ qua đến nội dung chính</a>
+
+    <!-- 1. HEADER -->
+    <header id="site-header" class="fixed inset-x-0 top-0 z-50 pt-[env(safe-area-inset-top)] transition-colors duration-300">
+      <div class="container-x flex h-16 items-center justify-between gap-4 md:h-20">
+        <a href="#top" class="inline-flex min-h-11 min-w-0 items-center truncate" aria-label="{{ brand.name }} — về đầu trang">
+          {{{ @brandLogo }}}
+        </a>
+        <nav aria-label="Menu chính" class="hidden lg:block">
+          <ul class="flex items-center gap-1">{{{ @navLinks }}}</ul>
+        </nav>
+        <div class="flex items-center gap-2">
+          {{{ @headerCta }}}
+          <button type="button" id="menu-toggle" class="grid size-11 shrink-0 place-items-center rounded-full border border-cream/20 text-cream lg:hidden" aria-expanded="false" aria-controls="mobile-menu" aria-label="Mở menu">
+            <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path data-icon-open d="M4 7h16M4 12h16M4 17h16"/><path data-icon-close class="hidden" d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Menu mobile toàn màn hình -->
+      <div id="mobile-menu" class="fixed inset-0 top-[calc(4rem+env(safe-area-inset-top))] z-40 hidden overflow-y-auto bg-ink lg:hidden" data-open="false">
+        <nav aria-label="Menu di động" class="container-x flex min-h-full flex-col pt-4 pb-[calc(2rem+env(safe-area-inset-bottom))]">
+          <ul>{{{ @mobileNavLinks }}}</ul>
+          <div class="mt-8 grid gap-3">{{{ @mobileMenuContacts }}}</div>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- 2. HERO -->
+      <!-- Banner trượt: ảnh tràn màn hình, chữ ở nửa trái (desktop) / phía dưới (mobile) -->
+      <section id="top" class="relative flex min-h-[100svh] overflow-hidden bg-night" aria-roledescription="carousel" aria-labelledby="hero-title" data-autoplay="{{ hero.autoplay }}">
+        <div class="absolute inset-0">{{{ @heroSlides }}}</div>
+        {{{ @heroShade }}}
+        <div class="container-x relative flex w-full flex-col justify-end pt-28 pb-[calc(8.5rem+env(safe-area-inset-bottom))] md:pb-28 lg:justify-center lg:pb-24">
+          <div class="mx-auto w-full max-w-xl text-center md:px-16 lg:mx-0 lg:w-1/2 lg:max-w-2xl lg:px-16 xl:px-0">
+            {{{ @heroContent }}}
+            {{{ @heroActions }}}
+          </div>
+        </div>
+        {{{ @heroControls }}}
+      </section>
+
+      <!-- 3. GIỚI THIỆU -->
+      <section id="about" class="section" aria-labelledby="about-title">
+        <div class="container-x grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <div class="reveal media-frame relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-3xl border border-cream/10 lg:max-w-none">
+            {{{ @aboutMedia }}}
+          </div>
+          <div class="reveal">
+            <p class="eyebrow">{{ about.eyebrow }}</p>
+            <h2 id="about-title" class="h-section mt-3">{{ about.heading }}</h2>
+            <div class="mt-6 space-y-4 text-lg text-cream/80">{{{ @aboutParagraphs }}}</div>
+            <dl class="mt-8 grid grid-cols-2 gap-3 sm:gap-4">{{{ @aboutStats }}}</dl>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. DỊCH VỤ -->
+      <section id="services" class="section bg-ink-2/40" aria-labelledby="services-title">
+        <div class="container-x">
+          <div class="reveal max-w-2xl">
+            <p class="eyebrow">{{ services.eyebrow }}</p>
+            <h2 id="services-title" class="h-section mt-3">{{ services.heading }}</h2>
+            <p class="mt-4 text-lg text-muted">{{ services.intro }}</p>
+          </div>
+          <ul class="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:mt-14 lg:grid-cols-3 lg:gap-6">{{{ @servicesList }}}</ul>
+        </div>
+      </section>
+
+      <!-- 5. VIDEO -->
+      <section id="video" class="section" aria-labelledby="video-title">
+        <div class="container-x">
+          <div class="reveal max-w-2xl">
+            <p class="eyebrow">{{ videos.eyebrow }}</p>
+            <h2 id="video-title" class="h-section mt-3">{{ videos.heading }}</h2>
+          </div>
+          <div class="reveal mt-10 lg:mt-14">{{{ @videoFeatured }}}</div>
+          <ul class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">{{{ @videoList }}}</ul>
+        </div>
+      </section>
+
+      <!-- 6. GALLERY -->
+      <section id="gallery" class="section bg-ink-2/40" aria-labelledby="gallery-title">
+        <div class="container-x">
+          <div class="reveal flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div class="max-w-2xl">
+              <p class="eyebrow">{{ gallery.eyebrow }}</p>
+              <h2 id="gallery-title" class="h-section mt-3">{{ gallery.heading }}</h2>
+            </div>
+            <ul class="flex flex-wrap gap-2" aria-label="Lọc ảnh theo danh mục">{{{ @galleryFilters }}}</ul>
+          </div>
+          <ul id="gallery-grid" class="mt-10 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:mt-14 lg:grid-cols-4">{{{ @galleryList }}}</ul>
+        </div>
+      </section>
+
+      <!-- 7. KHÁCH HÀNG / ĐỐI TÁC -->
+      <section id="clients" class="py-14 md:py-20" aria-labelledby="clients-title">
+        <div class="container-x">
+          <p class="eyebrow text-center">{{ clients.eyebrow }}</p>
+          <h2 id="clients-title" class="mt-3 text-center font-display text-2xl text-cream sm:text-3xl">{{ clients.heading }}</h2>
+          <ul class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">{{{ @clientsList }}}</ul>
+        </div>
+      </section>
+
+      <!-- 8. CẢM NHẬN KHÁCH HÀNG -->
+      <section id="testimonials" class="section bg-ink-2/40" aria-labelledby="testimonials-title">
+        <div class="container-x">
+          <div class="reveal flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            <div class="max-w-2xl">
+              <p class="eyebrow">{{ testimonials.eyebrow }}</p>
+              <h2 id="testimonials-title" class="h-section mt-3">{{ testimonials.heading }}</h2>
+            </div>
+            <div class="flex gap-3">
+              <button type="button" data-slide-prev class="grid size-12 place-items-center rounded-full border border-cream/20 text-cream transition hover:border-gold hover:text-gold disabled:opacity-40" aria-label="Cảm nhận trước">
+                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              <button type="button" data-slide-next class="grid size-12 place-items-center rounded-full border border-cream/20 text-cream transition hover:border-gold hover:text-gold disabled:opacity-40" aria-label="Cảm nhận tiếp theo">
+                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="-mx-2 mt-10 overflow-hidden" aria-roledescription="carousel" aria-label="Cảm nhận khách hàng">
+            <ul id="slider-track" class="no-scrollbar flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain">{{{ @testimonialsList }}}</ul>
+          </div>
+          <ul class="mt-4 flex justify-center gap-1" aria-label="Chọn cảm nhận">{{{ @testimonialDots }}}</ul>
+        </div>
+      </section>
+
+      <!-- 9. LIÊN HỆ -->
+      <section id="contact" class="section" aria-labelledby="contact-title">
+        <div class="container-x grid gap-10 lg:grid-cols-[2fr_3fr] lg:gap-16">
+          <div class="reveal">
+            <p class="eyebrow">{{ contact.eyebrow }}</p>
+            <h2 id="contact-title" class="h-section mt-3">{{ contact.heading }}</h2>
+            <p class="mt-4 text-lg text-muted">{{ contact.intro }}</p>
+            <ul class="mt-8 grid gap-3">{{{ @contactList }}}</ul>
+          </div>
+          <div class="reveal">{{{ @contactForm }}}</div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 10. FOOTER -->
+    <!-- Nền trắng gần đục + làm mờ ảnh phía sau để chữ luôn rõ dù ảnh nền trang nhiều màu -->
+    <footer class="border-t border-cream/15 bg-ink/85 backdrop-blur-md pt-14 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-12">
+      <div class="container-x grid gap-10 md:grid-cols-[2fr_3fr] md:items-start">
+        <div>
+          <a href="#top" class="inline-flex min-h-11 items-center">{{{ @brandLogo }}}</a>
+          <p class="mt-3 max-w-sm text-muted">{{ brand.tagline }}</p>
+          <ul class="mt-6 flex gap-3" aria-label="Mạng xã hội">{{{ @footerSocial }}}</ul>
+        </div>
+        <nav aria-label="Menu chân trang">
+          <ul class="grid grid-cols-2 gap-x-6 sm:grid-cols-3">{{{ @footerNav }}}</ul>
+        </nav>
+      </div>
+      <div class="container-x mt-10">
+        <div class="flex flex-col gap-2 border-t border-cream/15 pt-6 text-sm text-muted sm:flex-row sm:justify-between">
+          <p>{{{ @copyright }}}</p>
+          <p>{{ footer.note }}</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Nút liên hệ nổi (desktop) + thanh Gọi / Zalo cố định ở đáy (mobile) -->
+    {{{ @floatingContact }}}
+
+    <!-- Lightbox xem ảnh gallery -->
+    <div id="lightbox" class="fixed inset-0 z-[70] hidden flex-col bg-ink/95 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]" role="dialog" aria-modal="true" aria-label="Xem ảnh phóng to">
+      <div class="container-x flex h-16 items-center justify-between">
+        <p data-lightbox-counter class="text-sm text-muted" aria-live="polite"></p>
+        <button type="button" data-lightbox-close class="grid size-11 place-items-center rounded-full border border-cream/20 text-cream hover:border-gold hover:text-gold" aria-label="Đóng">
+          <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <figure class="relative flex min-h-0 flex-1 flex-col items-center justify-center px-4 pb-4">
+        <img data-lightbox-img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" width="1280" height="1600" class="max-h-full max-w-full rounded-lg object-contain">
+        <figcaption data-lightbox-caption class="mt-3 text-center text-cream/85"></figcaption>
+      </figure>
+      <button type="button" data-lightbox-prev class="absolute left-[max(0.5rem,env(safe-area-inset-left))] top-1/2 grid size-12 -translate-y-1/2 place-items-center rounded-full bg-ink-2/80 text-cream hover:text-gold" aria-label="Ảnh trước">
+        <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <button type="button" data-lightbox-next class="absolute right-[max(0.5rem,env(safe-area-inset-right))] top-1/2 grid size-12 -translate-y-1/2 place-items-center rounded-full bg-ink-2/80 text-cream hover:text-gold" aria-label="Ảnh tiếp theo">
+        <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,238 @@
+/* ============================================================================
+ *  INPUT.CSS — CSS nguồn Tailwind v4. Build sẽ xuất ra dist/assets/css/style.css
+ *  Màu và font khai báo MỘT LẦN trong @theme bên dưới.
+ * ========================================================================== */
+
+@import "tailwindcss" source(none);
+
+/* Chỉ quét các file có class Tailwind */
+@source "../index.html";
+@source "./templates.js";
+@source "./js/main.js";
+
+@theme {
+  /* Màu: nền sáng pastel (hồng → xanh ngọc), chữ tím than, điểm nhấn tím đậm.
+   * Tên token giữ nguyên để không phải sửa class: ink = bề mặt sáng, cream = chữ, gold = điểm nhấn */
+  --color-ink: #fbf8fd;
+  --color-ink-2: rgb(255 255 255 / 0.62);
+  --color-ink-3: #ece3f4;
+  --color-gold: #6b2f8f;
+  --color-gold-soft: #8443aa;
+  --color-cream: #1f1a2e;
+  --color-muted: #4a4458;
+
+  /* Màu cố định cho vùng nằm trên ảnh (hero, video, chip icon) — luôn tối */
+  --color-night: #060a14;
+  --color-snow: #f5f1e6;
+  --color-brass: #d4af37;
+
+  /* Font: sans-serif có sẵn của hệ thống (đủ dấu tiếng Việt, không phải tải font) */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ---------- Nền tảng ---------- */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: calc(5rem + env(safe-area-inset-top));
+  }
+  body {
+    overflow-x: clip;
+    line-height: 1.65;
+    background: #c4bcd6;
+  }
+  /* Nền gradient hồng (góc trái trên) → xanh ngọc (dưới), cố định theo khung màn hình
+     (dùng lớp fixed thay cho background-attachment: fixed vốn lỗi trên iOS).
+     Có ảnh nền trong site.config.js (background.image) thì thẻ <style> trong HTML ghi đè nền này. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(ellipse 70% 120% at 0% 0%, #f2a9ff 0%, rgb(242 169 255 / 0) 70%),
+      linear-gradient(170deg, #cdb5e0 0%, #b5bccf 45%, #9cc4bb 100%);
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    line-height: 1.15;
+  }
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+  /* Khóa cuộn trang khi menu mobile / lightbox đang mở */
+  html.is-locked,
+  html.is-locked body {
+    overflow: hidden;
+  }
+}
+
+/* ---------- Tiện ích dùng chung ---------- */
+
+/* Khung nội dung: lề 18px trên mobile, 32px từ tablet; tôn trọng tai thỏ khi xoay ngang */
+@utility container-x {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-left: max(1.125rem, env(safe-area-inset-left));
+  padding-right: max(1.125rem, env(safe-area-inset-right));
+  @media (width >= 48rem) {
+    padding-left: max(2rem, env(safe-area-inset-left));
+    padding-right: max(2rem, env(safe-area-inset-right));
+  }
+}
+
+/* Khoảng cách section: nhỏ trên mobile, rộng hơn trên desktop */
+@utility section {
+  padding-block: 4rem;
+  @media (width >= 48rem) {
+    padding-block: 6rem;
+  }
+}
+
+/* Tiêu đề co giãn theo màn hình */
+@utility h-hero {
+  font-size: clamp(2.25rem, 1.35rem + 4.6vw, 5rem);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+}
+@utility h-section {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-cream);
+  font-size: clamp(1.875rem, 1.35rem + 2.4vw, 3rem);
+}
+@utility eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ---------- Khung ảnh thay thế khi chưa có ảnh ---------- */
+.media-frame {
+  background-color: var(--color-ink-3);
+  background-image:
+    radial-gradient(circle at 30% 20%, rgb(212 175 55 / 0.16), transparent 55%),
+    linear-gradient(135deg, var(--color-ink-2), var(--color-ink-3));
+}
+.media-frame picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+img.img-missing {
+  visibility: hidden;
+}
+/* Dải đối tác: chỉ hiện tên khi logo chưa có / lỗi */
+img:not(.img-missing) + .logo-fallback {
+  visibility: hidden;
+}
+
+/* ---------- Hero: banner trượt ---------- */
+.hero-slide {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.hero-slide.is-active {
+  opacity: 1;
+}
+/* Phóng nhẹ ảnh đang hiện — chỉ trên màn hình lớn để mobile nhẹ máy */
+@media (width >= 48rem) and (prefers-reduced-motion: no-preference) {
+  .hero-slide img {
+    transform: scale(1.06);
+    transition: transform 7s ease-out;
+  }
+  .hero-slide.is-active img {
+    transform: scale(1);
+  }
+}
+
+/* Tên MC: chữ in hoa đậm, vàng ánh kim như banner sự kiện */
+.hero-name {
+  display: block;
+  max-width: 100%;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(2.75rem, 1.2rem + 5.6vw, 5.75rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  color: var(--color-brass);
+  background: linear-gradient(180deg, #fff4c8 0%, #ecd27a 35%, var(--color-brass) 60%, #a37f1f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 3px 14px rgb(0 0 0 / 0.55));
+}
+
+/* ---------- Header: kính mờ sáng, đậm hơn khi đã cuộn ----------
+ * Hiệu ứng mờ đặt ở ::before: backdrop-filter trên chính #site-header sẽ biến header thành
+ * khung chứa của #mobile-menu (position: fixed) → menu bị nhốt trong 64px. */
+#site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-color: rgb(251 248 253 / 0.55);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  transition: background-color 0.3s;
+}
+#site-header.is-scrolled::before,
+#site-header.menu-open::before {
+  background-color: rgb(251 248 253 / 0.9);
+  box-shadow: 0 1px 0 rgb(31 26 46 / 0.08);
+}
+
+/* ---------- Hiện dần khi cuộn (chỉ khi có JS và người dùng không tắt chuyển động) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.7s ease,
+      transform 0.7s ease;
+  }
+  .js .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Tôn trọng người dùng tắt hiệu ứng chuyển động */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Gallery: ẩn ảnh không thuộc danh mục đang lọc */
+#gallery-grid > li.is-hidden {
+  display: none;
+}
